@@ -12,18 +12,20 @@ use {
         transaction_batch::TransactionBatch,
         vote_sender_types::ReplayVoteSender,
     },
+<<<<<<< HEAD
     solana_runtime_transaction::transaction_with_meta::TransactionWithMeta,
     solana_sdk::{pubkey::Pubkey, saturating_add_assign},
+=======
+    solana_sdk::{hash::Hash, saturating_add_assign},
+>>>>>>> 1742826fca (jito patch)
     solana_svm::{
         transaction_commit_result::{TransactionCommitResult, TransactionCommitResultExtensions},
         transaction_processing_result::{
             TransactionProcessingResult, TransactionProcessingResultExtensions,
         },
     },
-    solana_transaction_status::{
-        token_balances::TransactionTokenBalancesSet, TransactionTokenBalance,
-    },
-    std::{collections::HashMap, sync::Arc},
+    solana_transaction_status::{token_balances::TransactionTokenBalancesSet, PreBalanceInfo},
+    std::sync::Arc,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -33,13 +35,6 @@ pub enum CommitTransactionDetails {
         loaded_accounts_data_size: u32,
     },
     NotCommitted,
-}
-
-#[derive(Default)]
-pub(super) struct PreBalanceInfo {
-    pub native: Vec<Vec<u64>>,
-    pub token: Vec<Vec<TransactionTokenBalance>>,
-    pub mint_decimals: HashMap<Pubkey, u8>,
 }
 
 #[derive(Clone)]
@@ -144,7 +139,7 @@ impl Committer {
                 .collect_vec();
             let post_balances = bank.collect_balances(batch);
             let post_token_balances =
-                collect_token_balances(bank, batch, &mut pre_balance_info.mint_decimals);
+                collect_token_balances(bank, batch, &mut pre_balance_info.mint_decimals, None);
             let mut transaction_index = starting_transaction_index.unwrap_or_default();
             let batch_transaction_indexes: Vec<_> = commit_results
                 .iter()

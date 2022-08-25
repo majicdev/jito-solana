@@ -8,6 +8,10 @@ use {
     crossbeam_channel::{Receiver, RecvTimeoutError},
     itertools::Itertools,
     log::*,
+    solana_client::connection_cache::{ConnectionCache, Protocol},
+    solana_connection_cache::client_connection::ClientConnection as TpuConnection,
+    solana_gossip::cluster_info::ClusterInfo,
+    solana_measure::measure::Measure,
     solana_runtime::{bank::Bank, bank_forks::BankForks},
     solana_sdk::{
         hash::Hash, nonce_account, pubkey::Pubkey, saturating_add_assign, signature::Signature,
@@ -147,6 +151,7 @@ pub const MAX_RETRY_SLEEP_MS: u64 = 1_000;
 
 impl SendTransactionService {
     pub fn new<Client: TransactionClient + Clone + std::marker::Send + 'static>(
+        cluster_info: Arc<ClusterInfo>,
         bank_forks: &Arc<RwLock<BankForks>>,
         receiver: Receiver<TransactionInfo>,
         client: Client,
@@ -157,10 +162,11 @@ impl SendTransactionService {
             retry_rate_ms,
             ..Config::default()
         };
-        Self::new_with_config::<Client>(bank_forks, receiver, client, config, exit)
+        Self::new_with_config::<Client>(cluster_info, bank_forks, receiver, client, config, exit)
     }
 
     pub fn new_with_config<Client: TransactionClient + Clone + std::marker::Send + 'static>(
+        cluster_info: Arc<ClusterInfo>,
         bank_forks: &Arc<RwLock<BankForks>>,
         receiver: Receiver<TransactionInfo>,
         client: Client,
@@ -172,6 +178,7 @@ impl SendTransactionService {
         let retry_transactions = Arc::new(Mutex::new(HashMap::new()));
 
         let receive_txn_thread = Self::receive_txn_thread(
+            cluster_info.clone(),
             receiver,
             client.clone(),
             retry_transactions.clone(),
@@ -185,6 +192,7 @@ impl SendTransactionService {
         );
 
         let retry_thread = Self::retry_thread(
+            cluster_info,
             bank_forks.clone(),
             client,
             retry_transactions,
@@ -205,6 +213,7 @@ impl SendTransactionService {
     /// Thread responsible for receiving transactions from RPC clients.
     #[allow(clippy::too_many_arguments)]
     fn receive_txn_thread<Client: TransactionClient + std::marker::Send + 'static>(
+        cluster_info: Arc<ClusterInfo>,
         receiver: Receiver<TransactionInfo>,
         client: Client,
         retry_transactions: Arc<Mutex<HashMap<Signature, TransactionInfo>>>,
@@ -315,6 +324,7 @@ impl SendTransactionService {
 
     /// Thread responsible for retrying transactions
     fn retry_thread<Client: TransactionClient + std::marker::Send + 'static>(
+        cluster_info: Arc<ClusterInfo>,
         bank_forks: Arc<RwLock<BankForks>>,
         client: Client,
         retry_transactions: Arc<Mutex<HashMap<Signature, TransactionInfo>>>,
@@ -542,14 +552,17 @@ mod test {
             transaction_client::{ConnectionCacheClient, TpuClientNextClient},
         },
         crossbeam_channel::{bounded, unbounded},
+        solana_gossip::contact_info::ContactInfo,
         solana_sdk::{
             account::AccountSharedData,
             genesis_config::create_genesis_config,
             nonce::{self, state::DurableNonce},
             pubkey::Pubkey,
-            signature::Signer,
+            signature::{Keypair, Signer},
             system_program, system_transaction,
+            timing::timestamp,
         },
+        solana_streamer::socket::SocketAddrSpace,
         std::ops::Sub,
         tokio::runtime::Handle,
     };
@@ -575,6 +588,7 @@ mod test {
     }
 
     #[test]
+<<<<<<< HEAD
     fn service_exit_with_connection_cache() {
         service_exit::<ConnectionCacheClient<NullTpuInfo>>(None);
     }
@@ -586,6 +600,10 @@ mod test {
     }
 
     fn validator_exit<C: ClientWithCreator>(maybe_runtime: Option<Handle>) {
+=======
+    fn validator_exit() {
+        let cluster_info = new_test_cluster_info();
+>>>>>>> 1742826fca (jito patch)
         let bank = Bank::default_for_tests();
         let bank_forks = BankForks::new_rw_arc(bank);
         let (sender, receiver) = bounded(0);
@@ -601,9 +619,23 @@ mod test {
         };
 
         let exit = Arc::new(AtomicBool::new(false));
+<<<<<<< HEAD
         let client = C::create_client(maybe_runtime, "127.0.0.1:0".parse().unwrap(), None, 1);
         let _send_transaction_service =
             SendTransactionService::new(&bank_forks, receiver, client.clone(), 1000, exit.clone());
+=======
+        let connection_cache = Arc::new(ConnectionCache::new("connection_cache_test"));
+        let _send_transaction_service = SendTransactionService::new::<NullTpuInfo>(
+            cluster_info,
+            &bank_forks,
+            None,
+            receiver,
+            &connection_cache,
+            1000,
+            1,
+            exit.clone(),
+        );
+>>>>>>> 1742826fca (jito patch)
 
         sender.send(dummy_tx_info()).unwrap();
 

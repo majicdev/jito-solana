@@ -789,6 +789,7 @@ fn test_snapshots_with_background_services(
                 &snapshot_test_config
                     .snapshot_config
                     .full_snapshot_archives_dir,
+                None,
             ) != Some(slot)
             {
                 assert!(
@@ -807,7 +808,12 @@ fn test_snapshots_with_background_services(
                 &snapshot_test_config
                     .snapshot_config
                     .incremental_snapshot_archives_dir,
+<<<<<<< HEAD
                 latest_full_snapshot_slot.unwrap(),
+=======
+                last_full_snapshot_slot.unwrap(),
+                None,
+>>>>>>> 1742826fca (jito patch)
             ) != Some(slot)
             {
                 assert!(
