@@ -1310,14 +1310,14 @@ impl RpcClient {
 
     pub async fn simulate_bundle(
         &self,
-        bundle: &VersionedBundle,
+        bundle: &[impl SerializableTransaction],
     ) -> RpcResult<RpcSimulateBundleResult> {
         self.simulate_bundle_with_config(
             bundle,
             RpcSimulateBundleConfig {
                 simulation_bank: Some(SimulationSlotConfig::Commitment(self.commitment())),
-                pre_execution_accounts_configs: vec![None; bundle.transactions.len()],
-                post_execution_accounts_configs: vec![None; bundle.transactions.len()],
+                pre_execution_accounts_configs: vec![None; bundle.len()],
+                post_execution_accounts_configs: vec![None; bundle.len()],
                 ..RpcSimulateBundleConfig::default()
             },
         )
@@ -1326,7 +1326,7 @@ impl RpcClient {
 
     pub async fn simulate_bundle_with_config(
         &self,
-        bundle: &VersionedBundle,
+        bundle: &[impl SerializableTransaction],
         config: RpcSimulateBundleConfig,
     ) -> RpcResult<RpcSimulateBundleResult> {
         let transaction_encoding = config
@@ -1335,9 +1335,8 @@ impl RpcClient {
         let simulation_bank = Some(config.simulation_bank.unwrap_or_default());
 
         let encoded_transactions = bundle
-            .transactions
             .iter()
-            .map(|tx| serialize_and_encode::<VersionedTransaction>(tx, transaction_encoding))
+            .map(|tx| serialize_and_encode(tx, transaction_encoding))
             .collect::<ClientResult<Vec<String>>>()?;
         let rpc_bundle_request = RpcBundleRequest {
             encoded_transactions,

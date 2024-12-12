@@ -1,5 +1,6 @@
 #![allow(clippy::arithmetic_side_effects)]
 
+use std::collections::HashMap;
 pub use {
     crate::extract_memos::extract_and_fmt_memos,
     solana_sdk::reward_type::RewardType,
@@ -850,6 +851,13 @@ pub struct TransactionByAddrInfo {
     pub index: u32,                    // Where the transaction is located in the block
     pub memo: Option<String>,          // Transaction memo
     pub block_time: Option<UnixTimestamp>,
+}
+
+#[derive(Default)]
+pub struct PreBalanceInfo {
+    pub native: Vec<Vec<u64>>,
+    pub token: Vec<Vec<TransactionTokenBalance>>,
+    pub mint_decimals: HashMap<Pubkey, u8>,
 }
 
 #[cfg(test)]

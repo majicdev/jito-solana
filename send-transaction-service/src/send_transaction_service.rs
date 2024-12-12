@@ -574,7 +574,15 @@ mod test {
 
         let client = C::create_client(maybe_runtime, "127.0.0.1:0".parse().unwrap(), None, 1);
 
+        let node_keypair = Arc::new(Keypair::new());
+        let cluster_info = Arc::new(ClusterInfo::new(
+            ContactInfo::new_localhost(&node_keypair.pubkey(), timestamp()),
+            node_keypair,
+            SocketAddrSpace::Unspecified,
+        ));
+
         let send_transaction_service = SendTransactionService::new(
+            cluster_info,
             &bank_forks,
             receiver,
             client.clone(),
@@ -588,22 +596,16 @@ mod test {
     }
 
     #[test]
-<<<<<<< HEAD
     fn service_exit_with_connection_cache() {
         service_exit::<ConnectionCacheClient<NullTpuInfo>>(None);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-
     async fn service_exit_with_tpu_client_next() {
         service_exit::<TpuClientNextClient<NullTpuInfo>>(Some(Handle::current()));
     }
 
     fn validator_exit<C: ClientWithCreator>(maybe_runtime: Option<Handle>) {
-=======
-    fn validator_exit() {
-        let cluster_info = new_test_cluster_info();
->>>>>>> 1742826fca (jito patch)
         let bank = Bank::default_for_tests();
         let bank_forks = BankForks::new_rw_arc(bank);
         let (sender, receiver) = bounded(0);
@@ -619,23 +621,21 @@ mod test {
         };
 
         let exit = Arc::new(AtomicBool::new(false));
-<<<<<<< HEAD
         let client = C::create_client(maybe_runtime, "127.0.0.1:0".parse().unwrap(), None, 1);
-        let _send_transaction_service =
-            SendTransactionService::new(&bank_forks, receiver, client.clone(), 1000, exit.clone());
-=======
-        let connection_cache = Arc::new(ConnectionCache::new("connection_cache_test"));
-        let _send_transaction_service = SendTransactionService::new::<NullTpuInfo>(
+        let node_keypair = Arc::new(Keypair::new());
+        let cluster_info = Arc::new(ClusterInfo::new(
+            ContactInfo::new_localhost(&node_keypair.pubkey(), timestamp()),
+            node_keypair,
+            SocketAddrSpace::Unspecified,
+        ));
+        let _send_transaction_service = SendTransactionService::new(
             cluster_info,
             &bank_forks,
-            None,
             receiver,
-            &connection_cache,
+            client.clone(),
             1000,
-            1,
             exit.clone(),
         );
->>>>>>> 1742826fca (jito patch)
 
         sender.send(dummy_tx_info()).unwrap();
 

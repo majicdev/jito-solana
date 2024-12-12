@@ -12,12 +12,8 @@ use {
         transaction_batch::TransactionBatch,
         vote_sender_types::ReplayVoteSender,
     },
-<<<<<<< HEAD
     solana_runtime_transaction::transaction_with_meta::TransactionWithMeta,
-    solana_sdk::{pubkey::Pubkey, saturating_add_assign},
-=======
-    solana_sdk::{hash::Hash, saturating_add_assign},
->>>>>>> 1742826fca (jito patch)
+    solana_sdk::{hash::Hash, pubkey::Pubkey},
     solana_svm::{
         transaction_commit_result::{TransactionCommitResult, TransactionCommitResultExtensions},
         transaction_processing_result::{

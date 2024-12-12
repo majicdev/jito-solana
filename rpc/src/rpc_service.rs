@@ -1,5 +1,6 @@
 //! The `rpc_service` module implements the Solana JSON RPC service.
 
+use solana_client::connection_cache::Protocol;
 use {
     crate::{
         cluster_tpu_info::ClusterTpuInfo,
@@ -474,20 +475,15 @@ impl JsonRpcService {
 
         let leader_info =
             poh_recorder.map(|recorder| ClusterTpuInfo::new(cluster_info.clone(), recorder));
-<<<<<<< HEAD
         let client = ConnectionCacheClient::new(
             connection_cache,
-            tpu_address,
+            cluster_info.my_contact_info().tpu(Protocol::QUIC).unwrap(),
             send_transaction_service_config.tpu_peers.clone(),
-=======
-        let _send_transaction_service = Arc::new(SendTransactionService::new_with_config(
-            cluster_info,
-            &bank_forks,
->>>>>>> 1742826fca (jito patch)
             leader_info,
             send_transaction_service_config.leader_forward_count,
         );
         let _send_transaction_service = SendTransactionService::new_with_config(
+            cluster_info,
             &bank_forks,
             receiver,
             client,

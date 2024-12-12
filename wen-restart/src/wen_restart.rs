@@ -536,7 +536,7 @@ pub(crate) fn generate_snapshot(
         )?;
         directory = &snapshot_config.incremental_snapshot_archives_dir;
         if let Some(incremental_snapshot_slot) =
-            get_highest_incremental_snapshot_archive_slot(directory, full_snapshot_slot)
+            get_highest_incremental_snapshot_archive_slot(directory, full_snapshot_slot, None)
         {
             check_slot_smaller_than_intended_snapshot_slot(
                 incremental_snapshot_slot,

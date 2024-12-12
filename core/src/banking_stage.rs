@@ -43,14 +43,10 @@ use {
     },
     solana_sdk::{pubkey::Pubkey, timing::AtomicInterval},
     std::{
-<<<<<<< HEAD
-        cmp, env,
-        ops::Deref,
-=======
         cmp,
         collections::HashSet,
         env,
->>>>>>> 1742826fca (jito patch)
+        ops::Deref,
         sync::{
             atomic::{AtomicU64, AtomicUsize, Ordering},
             Arc, RwLock,
@@ -76,12 +72,8 @@ pub mod unprocessed_transaction_storage;
 mod consume_worker;
 pub(crate) mod decision_maker;
 mod forward_packet_batches_by_accounts;
-<<<<<<< HEAD
 mod immutable_deserialized_packet;
-=======
-mod forward_worker;
 pub(crate) mod immutable_deserialized_packet;
->>>>>>> 1742826fca (jito patch)
 mod latest_unprocessed_votes;
 pub(crate) mod leader_slot_timing_metrics;
 mod multi_iterator_scanner;
@@ -419,27 +411,6 @@ impl BankingStage {
         bundle_account_locker: BundleAccountLocker,
     ) -> Self {
         match block_production_method {
-<<<<<<< HEAD
-=======
-            BlockProductionMethod::ThreadLocalMultiIterator => {
-                Self::new_thread_local_multi_iterator(
-                    cluster_info,
-                    poh_recorder,
-                    non_vote_receiver,
-                    tpu_vote_receiver,
-                    gossip_vote_receiver,
-                    num_threads,
-                    transaction_status_sender,
-                    replay_vote_sender,
-                    log_messages_bytes_limit,
-                    connection_cache,
-                    bank_forks,
-                    prioritization_fee_cache,
-                    blacklisted_accounts,
-                    bundle_account_locker,
-                )
-            }
->>>>>>> 1742826fca (jito patch)
             BlockProductionMethod::CentralScheduler => Self::new_central_scheduler(
                 cluster_info,
                 poh_recorder,
@@ -696,12 +667,7 @@ impl BankingStage {
         Self { bank_thread_hdls }
     }
 
-<<<<<<< HEAD
     fn spawn_thread_local_multi_iterator_thread<T: LikeClusterInfo>(
-=======
-    #[allow(clippy::too_many_arguments)]
-    fn spawn_thread_local_multi_iterator_thread(
->>>>>>> 1742826fca (jito patch)
         id: u32,
         packet_receiver: BankingPacketReceiver,
         decision_maker: DecisionMaker,
@@ -713,12 +679,7 @@ impl BankingStage {
         blacklisted_accounts: HashSet<Pubkey>,
         bundle_account_locker: BundleAccountLocker,
     ) -> JoinHandle<()> {
-<<<<<<< HEAD
         let mut packet_receiver = PacketReceiver::new(id, packet_receiver);
-=======
-        let mut packet_receiver = PacketReceiver::new(id, packet_receiver, bank_forks);
-
->>>>>>> 1742826fca (jito patch)
         let consumer = Consumer::new(
             committer,
             transaction_recorder,

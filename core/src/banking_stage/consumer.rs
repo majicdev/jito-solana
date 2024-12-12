@@ -28,15 +28,11 @@ use {
     },
     solana_runtime_transaction::transaction_with_meta::TransactionWithMeta,
     solana_sdk::{
-<<<<<<< HEAD
-        clock::{FORWARD_TRANSACTIONS_TO_LEADER_AT_SLOT_OFFSET, MAX_PROCESSING_AGE},
-        fee::FeeBudgetLimits,
-=======
         clock::{Slot, FORWARD_TRANSACTIONS_TO_LEADER_AT_SLOT_OFFSET, MAX_PROCESSING_AGE},
         feature_set,
+        fee::FeeBudgetLimits,
         message::SanitizedMessage,
         pubkey::Pubkey,
->>>>>>> 1742826fca (jito patch)
         saturating_add_assign,
         timing::timestamp,
         transaction::{self, TransactionError},
@@ -47,16 +43,11 @@ use {
         transaction_processing_result::TransactionProcessingResultExtensions,
         transaction_processor::{ExecutionRecordingConfig, TransactionProcessingConfig},
     },
-<<<<<<< HEAD
     solana_svm_transaction::svm_message::SVMMessage,
     solana_timings::ExecuteTimings,
     std::{
-        num::Saturating,
-=======
-    solana_transaction_status::PreBalanceInfo,
-    std::{
         collections::HashSet,
->>>>>>> 1742826fca (jito patch)
+        num::Saturating,
         sync::{atomic::Ordering, Arc},
         time::Instant,
     },
@@ -700,11 +691,7 @@ impl Consumer {
 
         let (record_transactions_summary, record_us) = measure_us!(self
             .transaction_recorder
-<<<<<<< HEAD
-            .record_transactions(bank.slot(), processed_transactions));
-=======
-            .record_transactions(bank.slot(), vec![executed_transactions]));
->>>>>>> 1742826fca (jito patch)
+            .record_transactions(bank.slot(), vec![processed_transactions]));
         execute_and_commit_timings.record_us = record_us;
 
         let RecordTransactionsSummary {
@@ -818,24 +805,6 @@ impl Consumer {
         )
     }
 
-<<<<<<< HEAD
-    fn accumulate_execute_units_and_time(execute_timings: &ExecuteTimings) -> (u64, u64) {
-        execute_timings.details.per_program_timings.values().fold(
-            (0, 0),
-            |(units, times), program_timings| {
-                (
-                    (Saturating(units)
-                        + program_timings.accumulated_units
-                        + program_timings.total_errored_units)
-                        .0,
-                    (Saturating(times) + program_timings.accumulated_us).0,
-                )
-            },
-        )
-    }
-
-=======
->>>>>>> 1742826fca (jito patch)
     /// This function filters pending packets that are still valid
     /// # Arguments
     /// * `transactions` - a batch of transactions deserialized from packets

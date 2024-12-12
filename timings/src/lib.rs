@@ -11,7 +11,7 @@ use {
     },
 };
 
-#[derive(Default, Debug, PartialEq, Eq)]
+#[derive(Clone, Default, Debug, PartialEq, Eq)]
 pub struct ProgramTiming {
     pub accumulated_us: Saturating<u64>,
     pub accumulated_units: Saturating<u64>,

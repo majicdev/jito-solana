@@ -45,12 +45,7 @@ impl QosService {
     pub fn select_and_accumulate_transaction_costs<'a, Tx: TransactionWithMeta>(
         &self,
         bank: &Bank,
-<<<<<<< HEAD
         transactions: &'a [Tx],
-=======
-        cost_tracker: &mut CostTracker, // caller should pass in &mut bank.write_cost_tracker().unwrap()
-        transactions: &[SanitizedTransaction],
->>>>>>> 1742826fca (jito patch)
         pre_results: impl Iterator<Item = transaction::Result<()>>,
     ) -> (Vec<transaction::Result<TransactionCost<'a, Tx>>>, u64) {
         let transaction_costs =

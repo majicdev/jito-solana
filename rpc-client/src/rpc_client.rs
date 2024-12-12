@@ -1130,13 +1130,16 @@ impl RpcClient {
         )
     }
 
-    pub fn simulate_bundle(&self, bundle: &VersionedBundle) -> RpcResult<RpcSimulateBundleResult> {
+    pub fn simulate_bundle(
+        &self,
+        bundle: &[impl SerializableTransaction],
+    ) -> RpcResult<RpcSimulateBundleResult> {
         self.invoke((self.rpc_client.as_ref()).simulate_bundle(bundle))
     }
 
     pub fn simulate_bundle_with_config(
         &self,
-        bundle: &VersionedBundle,
+        bundle: &[impl SerializableTransaction],
         config: RpcSimulateBundleConfig,
     ) -> RpcResult<RpcSimulateBundleResult> {
         self.invoke((self.rpc_client.as_ref()).simulate_bundle_with_config(bundle, config))
