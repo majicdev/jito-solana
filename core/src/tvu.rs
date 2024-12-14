@@ -265,12 +265,14 @@ impl Tvu {
             exit.clone(),
         );
 
+        let (ledger_cleanup_slot_sender, ledger_cleanup_slot_receiver) = unbounded();
         let replay_stage_config = ReplayStageConfig {
             vote_account: *vote_account,
             authorized_voter_keypairs,
             exit: exit.clone(),
             rpc_subscriptions: rpc_subscriptions.clone(),
             leader_schedule_cache: leader_schedule_cache.clone(),
+            latest_root_senders: vec![ledger_cleanup_slot_sender],
             accounts_background_request_sender,
             block_commitment_cache,
             transaction_status_sender,
